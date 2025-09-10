@@ -17,8 +17,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from './components/ui/input';
 import { Label } from './components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
-import { SimpleChart } from './components/SimpleChart';
-import { useImobziData, isAPIConfigured, getAPIStatus } from './services/imobziService';
+import { SimpleBarChart, SimplePieChart, SimpleLineChart } from './components/SimpleChart';
+import { useImobziData, calculateMetrics, useApiStatus } from './services/imobziService';
 import { 
   TrendingUp, 
   DollarSign, 
