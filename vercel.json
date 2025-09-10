@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "name": "dashboard-uno-imobiliaria",
+  "builds": [
+    {
+      "src": "src/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/src/dist/$1"
+    }
+  ],
+  "env": {
+    "VITE_IMOBZI_API_URL": "@vite_imobzi_api_url",
+    "VITE_IMOBZI_API_KEY": "@vite_imobzi_api_key",
+    "VITE_IMOBZI_CLIENT_ID": "@vite_imobzi_client_id",
+    "VITE_IMOBZI_CLIENT_SECRET": "@vite_imobzi_client_secret"
+  }
+}
