@@ -8,15 +8,29 @@
       "config": {
         "distDir": "dist"
       }
+    },
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
     {
       "src": "/(.*)",
       "dest": "/src/dist/$1"
     }
   ],
+  "functions": {
+    "api/proxy.js": {
+      "maxDuration": 30
+    }
+  },
   "env": {
+    "IMOBZI_SECRET": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkX2F0IjoiMjAyNS0wOS0xMFQxNTo0Nzo0Ni4wMjIzNzZaIiwiaXNfdGhpcmRfcGFydHlfYWNjZXNzIjp0cnVlLCJ0aGlyZF9wYXJ0eV9hcHBfaWQiOjUzNjA4MDA3MjA0ODY0MDB9.SYFuWb_CKwQNfb2b-SbcWhOhvcG5Qzni7cQaRM5SNdw",
     "VITE_IMOBZI_API_URL": "@vite_imobzi_api_url",
     "VITE_IMOBZI_API_KEY": "@vite_imobzi_api_key",
     "VITE_IMOBZI_CLIENT_ID": "@vite_imobzi_client_id",
