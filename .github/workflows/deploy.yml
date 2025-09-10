@@ -1,0 +1,46 @@
+name: Deploy Dashboard Uno
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        cache-dependency-path: src/package-lock.json
+        
+    - name: Install dependencies
+      run: |
+        cd src
+        npm ci
+        
+    - name: Build project
+      run: |
+        cd src
+        npm run build
+      env:
+        VITE_IMOBZI_API_URL: ${{ secrets.VITE_IMOBZI_API_URL }}
+        VITE_IMOBZI_API_KEY: ${{ secrets.VITE_IMOBZI_API_KEY }}
+        VITE_IMOBZI_CLIENT_ID: ${{ secrets.VITE_IMOBZI_CLIENT_ID }}
+        VITE_IMOBZI_CLIENT_SECRET: ${{ secrets.VITE_IMOBZI_CLIENT_SECRET }}
+        
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      if: github.ref == 'refs/heads/main'
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./src/dist
+        cname: dashboard-uno.redeuno.com.br
+
