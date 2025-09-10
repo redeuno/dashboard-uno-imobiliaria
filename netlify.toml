@@ -1,0 +1,24 @@
+[build]
+  base = "src"
+  command = "npm install && npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "18"
+  NPM_VERSION = "9"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[context.production.environment]
+  VITE_IMOBZI_API_URL = "https://api.imobzi.com/v1"
+  VITE_UPDATE_INTERVAL = "900000"
+  VITE_ENABLE_AUTO_UPDATE = "true"
+
+[context.deploy-preview.environment]
+  VITE_IMOBZI_API_URL = "https://api.imobzi.com/v1"
+  VITE_UPDATE_INTERVAL = "900000"
+  VITE_ENABLE_AUTO_UPDATE = "true"
+
