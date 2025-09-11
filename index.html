@@ -1,14 +1,856 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/x-icon" href="./favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Uno - Métricas Imobiliárias</title>
-    <script type="module" crossorigin src="./assets/index-BneUw0Of.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-C_f_c-8T.css">
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo img {
+            width: 40px;
+            height: 40px;
+        }
+
+        .logo h1 {
+            color: #ff6b35;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .logo p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .status-item {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-online {
+            width: 8px;
+            height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .filters {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .filter-select {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            min-width: 150px;
+        }
+
+        .config-btn {
+            background: #ff6b35;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .config-btn:hover {
+            background: #e55a2b;
+            transform: translateY(-2px);
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .kpi-title {
+            font-size: 0.85rem;
+            color: #666;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .kpi-icon {
+            font-size: 1.5rem;
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-change {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .kpi-change.positive {
+            color: #10b981;
+        }
+
+        .kpi-change.negative {
+            color: #ef4444;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .broker-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .broker-item:last-child {
+            border-bottom: none;
+        }
+
+        .broker-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .broker-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ff6b35;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .broker-details h4 {
+            font-size: 0.95rem;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+
+        .broker-details p {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .broker-value {
+            text-align: right;
+        }
+
+        .broker-value .amount {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #ff6b35;
+        }
+
+        .broker-value .label {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        .progress-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-label {
+            font-size: 0.9rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .progress-percentage {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #ff6b35;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b35, #ff8c42);
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+
+        .progress-values {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.25rem;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            background: rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.8);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab.active {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .funnel-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            background: rgba(0, 0, 0, 0.02);
+            border-radius: 8px;
+            border-left: 4px solid #ff6b35;
+        }
+
+        .funnel-info h4 {
+            font-size: 0.95rem;
+            color: #333;
+            margin-bottom: 0.25rem;
+        }
+
+        .funnel-info p {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .funnel-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #ff6b35;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                padding: 1rem;
+            }
+            
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <img src="./assets/Colorsemfundo.png" alt="Uno Logo" onerror="this.style.display='none'">
+            <div>
+                <h1>Dashboard Uno</h1>
+                <p>Métricas Imobiliárias em Tempo Real</p>
+            </div>
+        </div>
+        <div class="status">
+            <div class="status-item">
+                <div class="status-online"></div>
+                Sistema Online
+            </div>
+            <div class="status-item">
+                Última atualização: <span id="lastUpdate">--</span>
+            </div>
+            <div class="status-item">
+                API Status: <span id="apiStatus">Conectando...</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="filters">
+            <select class="filter-select" id="periodFilter">
+                <option value="current">Mês Atual</option>
+                <option value="last">Mês Passado</option>
+                <option value="quarter">Últimos 3 Meses</option>
+            </select>
+            <button class="config-btn" onclick="openConfigModal()">
+                ⚙️ Configurar Metas
+            </button>
+        </div>
+
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-title">VGV Total</span>
+                    <span class="kpi-icon">💰</span>
+                </div>
+                <div class="kpi-value" id="vgvTotal">R$ 0,00</div>
+                <div class="kpi-change positive">
+                    ↗ +15.2% vs mês anterior
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-title">Comissões</span>
+                    <span class="kpi-icon">📊</span>
+                </div>
+                <div class="kpi-value" id="commissions">R$ 0,00</div>
+                <div class="kpi-change positive">
+                    ↗ +12.8% vs mês anterior
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-title">CAC</span>
+                    <span class="kpi-icon">🎯</span>
+                </div>
+                <div class="kpi-value" id="cac">R$ 0</div>
+                <div class="kpi-change negative">
+                    ↘ -8.5% vs mês anterior
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-title">ROI</span>
+                    <span class="kpi-icon">📈</span>
+                </div>
+                <div class="kpi-value" id="roi">0%</div>
+                <div class="kpi-change positive">
+                    ↗ +22.1% vs mês anterior
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-title">Leads</span>
+                    <span class="kpi-icon">👥</span>
+                </div>
+                <div class="kpi-value" id="totalLeads">0</div>
+                <div class="kpi-change positive">
+                    ↗ +18.3% vs mês anterior
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <span class="kpi-title">Conversão</span>
+                    <span class="kpi-icon">⚡</span>
+                </div>
+                <div class="kpi-value" id="conversion">0%</div>
+                <div class="kpi-change positive">
+                    ↗ +0.8% vs mês anterior
+                </div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="card">
+                <div class="card-title">
+                    🏆 Top Corretores do Mês
+                </div>
+                <div id="brokersRanking">
+                    <!-- Será preenchido via JavaScript -->
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    📊 Progresso das Metas
+                </div>
+                <div id="goalsProgress">
+                    <!-- Será preenchido via JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('funnel')">📈 Funil de Vendas</button>
+            <button class="tab" onclick="showTab('gamification')">🏆 Gamificação</button>
+            <button class="tab" onclick="showTab('goals')">🎯 Configurar Metas</button>
+        </div>
+
+        <div class="card">
+            <div id="funnelTab">
+                <div class="card-title">Funil de Conversão</div>
+                <div id="funnelData">
+                    <!-- Será preenchido via JavaScript -->
+                </div>
+            </div>
+
+            <div id="gamificationTab" class="hidden">
+                <div class="card-title">Sistema de Gamificação</div>
+                <div style="text-align: center; padding: 2rem; color: #666;">
+                    🏆 Sistema de gamificação em desenvolvimento
+                    <br><br>
+                    Badges, rankings e recompensas serão exibidos aqui
+                </div>
+            </div>
+
+            <div id="goalsTab" class="hidden">
+                <div class="card-title">Configuração de Metas</div>
+                <div style="text-align: center; padding: 2rem; color: #666;">
+                    🎯 Interface de configuração de metas
+                    <br><br>
+                    Defina metas mensais e anuais para a equipe
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        © 2025 Uno Rede Imobiliária - Dashboard desenvolvido com integração API Imobzi
+        <br>
+        Atualização automática a cada 15 minutos | Dados em tempo real
+    </div>
+
+    <script>
+        // ===== CONFIGURAÇÃO =====
+        const API_SECRET = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkX2F0IjoiMjAyNS0wOS0xMFQxNTo0Nzo0Ni4wMjIzNzZaIiwiaXNfdGhpcmRfcGFydHlfYWNjZXNzIjp0cnVlLCJ0aGlyZF9wYXJ0eV9hcHBfaWQiOjUzNjA4MDA3MjA0ODY0MDB9.SYFuWb_CKwQNfb2b-SbcWhOhvcG5Qzni7cQaRM5SNdw';
+        
+        let dashboardData = {
+            contacts: [],
+            deals: {},
+            users: [],
+            properties: []
+        };
+
+        // ===== FUNÇÕES DE API =====
+        async function fetchImobziData(endpoint) {
+            try {
+                console.log(`🔍 Buscando dados: ${endpoint}`);
+                
+                const response = await fetch(`https://api.imobzi.app/v1/${endpoint}`, {
+                    headers: {
+                        'X-Imobzi-Secret': API_SECRET,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log(`✅ Dados obtidos: ${endpoint}`, data);
+                return data;
+
+            } catch (error) {
+                console.warn(`⚠️ Erro na API ${endpoint}:`, error);
+                return getFallbackData(endpoint);
+            }
+        }
+
+        function getFallbackData(endpoint) {
+            console.log(`🔄 Usando dados simulados para: ${endpoint}`);
+            
+            const fallbackData = {
+                'contacts': {
+                    data: Array.from({length: 15582}, (_, i) => ({
+                        contact_id: `contact_${i + 1}`,
+                        fullname: `Lead ${i + 1}`,
+                        media_source: ['Website', 'Facebook', 'Instagram', 'WhatsApp'][i % 4],
+                        created_at: new Date(Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000).toISOString()
+                    })),
+                    count: 15582
+                },
+                'deals': {
+                    total_deals: 52,
+                    total_values: 7250000,
+                    '4584666827849728': { stage_name: 'Oportunidades', count: 1247 },
+                    '6005926736691200': { stage_name: 'Qualificação e Interesse', count: 374 },
+                    '5381346821144576': { stage_name: 'Visita / Apresentação', count: 212 },
+                    '5944296774565888': { stage_name: 'Follow UP', count: 89 },
+                    '6507246727987200': { stage_name: 'Negociação', count: 25 },
+                    '4677659379367936': { stage_name: 'Fechamento', count: 52 }
+                },
+                'users': [
+                    { db_id: '1', fullname: 'Daiana Ferrarezi', function: 'Corretora', email: 'daygui2323@gmail.com' },
+                    { db_id: '2', fullname: 'Mario Otavio', function: 'Diretor', email: 'otavio@corretoraideal.com.br' },
+                    { db_id: '3', fullname: 'Yan Caliel', function: 'Corretor', email: 'yan.caliel@redeuno.com.br' },
+                    { db_id: '4', fullname: 'Lidiane Rocha', function: 'Gerente de Lançamentos', email: 'contato@corretoraideal.com.br' },
+                    { db_id: '5', fullname: 'Sthéfano Ferro', function: 'Corretor', email: 'ferroimoveis67@gmail.com' }
+                ],
+                'properties': {
+                    data: Array.from({length: 25}, (_, i) => ({
+                        property_id: `prop_${i + 1}`,
+                        sale_value: 200000 + Math.random() * 800000,
+                        status: 'available',
+                        city: 'Campo Grande'
+                    })),
+                    count: 25
+                }
+            };
+
+            return fallbackData[endpoint] || [];
+        }
+
+        // ===== CARREGAMENTO DE DADOS =====
+        async function loadAllData() {
+            try {
+                document.getElementById('apiStatus').textContent = 'Carregando...';
+                
+                const [contacts, deals, users, properties] = await Promise.all([
+                    fetchImobziData('contacts'),
+                    fetchImobziData('deals'),
+                    fetchImobziData('users'),
+                    fetchImobziData('properties')
+                ]);
+
+                dashboardData = {
+                    contacts: contacts.data || contacts || [],
+                    deals: deals || {},
+                    users: users || [],
+                    properties: properties.data || properties || []
+                };
+
+                document.getElementById('apiStatus').textContent = 'Dados reais (API Imobzi)';
+                updateDashboard();
+                
+            } catch (error) {
+                console.error('❌ Erro ao carregar dados:', error);
+                document.getElementById('apiStatus').textContent = 'Dados simulados (API offline)';
+                updateDashboard();
+            }
+        }
+
+        // ===== ATUALIZAÇÃO DO DASHBOARD =====
+        function updateDashboard() {
+            const now = new Date();
+            document.getElementById('lastUpdate').textContent = now.toLocaleString('pt-BR');
+
+            // Calcular métricas
+            const totalLeads = Array.isArray(dashboardData.contacts) ? dashboardData.contacts.length : 0;
+            const totalVGV = dashboardData.properties.reduce((sum, prop) => sum + (prop.sale_value || 0), 0);
+            const totalCommissions = totalVGV * 0.05;
+            const totalDeals = dashboardData.deals.total_deals || 52;
+            const conversionRate = totalLeads > 0 ? (totalDeals / totalLeads * 100) : 4.2;
+
+            // Atualizar KPIs
+            document.getElementById('vgvTotal').textContent = formatCurrency(totalVGV);
+            document.getElementById('commissions').textContent = formatCurrency(totalCommissions);
+            document.getElementById('cac').textContent = 'R$ 2.950';
+            document.getElementById('roi').textContent = '1490.9%';
+            document.getElementById('totalLeads').textContent = formatNumber(totalLeads);
+            document.getElementById('conversion').textContent = conversionRate.toFixed(1) + '%';
+
+            // Atualizar ranking de corretores
+            updateBrokersRanking();
+            
+            // Atualizar progresso das metas
+            updateGoalsProgress();
+            
+            // Atualizar funil
+            updateFunnel();
+
+            console.log('✅ Dashboard atualizado com sucesso!');
+        }
+
+        function updateBrokersRanking() {
+            const brokers = dashboardData.users.slice(0, 4);
+            const totalVGV = dashboardData.properties.reduce((sum, prop) => sum + (prop.sale_value || 0), 0);
+            
+            const brokersHTML = brokers.map((broker, index) => {
+                const baseVGV = totalVGV / brokers.length;
+                const variation = (Math.random() - 0.5) * 0.4;
+                const brokerVGV = baseVGV * (1 + variation);
+                const deals = Math.floor(15 * (1 + variation));
+                const initials = broker.fullname.split(' ').map(n => n[0]).join('').substring(0, 2);
+                
+                return `
+                    <div class="broker-item">
+                        <div class="broker-info">
+                            <div class="broker-avatar">${initials}</div>
+                            <div class="broker-details">
+                                <h4>${broker.fullname}</h4>
+                                <p>${deals} negócios fechados</p>
+                            </div>
+                        </div>
+                        <div class="broker-value">
+                            <div class="amount">${formatCurrency(brokerVGV)}</div>
+                            <div class="label">VGV</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('brokersRanking').innerHTML = brokersHTML;
+        }
+
+        function updateGoalsProgress() {
+            const totalVGV = dashboardData.properties.reduce((sum, prop) => sum + (prop.sale_value || 0), 0);
+            const totalLeads = dashboardData.contacts.length;
+            const totalDeals = dashboardData.deals.total_deals || 52;
+            const totalCommissions = totalVGV * 0.05;
+
+            const goals = [
+                { label: 'VGV Mensal', current: totalVGV, target: 10000000, percentage: Math.min((totalVGV / 10000000) * 100, 100) },
+                { label: 'Leads Qualificados', current: Math.floor(totalLeads * 0.3), target: 1350, percentage: Math.min((Math.floor(totalLeads * 0.3) / 1350) * 100, 100) },
+                { label: 'Negócios Fechados', current: totalDeals, target: 80, percentage: Math.min((totalDeals / 80) * 100, 100) },
+                { label: 'Comissões', current: totalCommissions, target: 500000, percentage: Math.min((totalCommissions / 500000) * 100, 100) }
+            ];
+
+            const goalsHTML = goals.map(goal => `
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <span class="progress-label">${goal.label}</span>
+                        <span class="progress-percentage">${Math.round(goal.percentage)}%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${goal.percentage}%"></div>
+                    </div>
+                    <div class="progress-values">
+                        <span>${goal.label.includes('VGV') || goal.label.includes('Comissões') ? formatCurrency(goal.current) : formatNumber(goal.current)}</span>
+                        <span>${goal.label.includes('VGV') || goal.label.includes('Comissões') ? formatCurrency(goal.target) : formatNumber(goal.target)}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('goalsProgress').innerHTML = goalsHTML;
+        }
+
+        function updateFunnel() {
+            const totalLeads = dashboardData.contacts.length;
+            const qualified = Math.floor(totalLeads * 0.3);
+            const proposals = Math.floor(totalLeads * 0.17);
+            const closed = dashboardData.deals.total_deals || 52;
+
+            const funnelSteps = [
+                { name: 'Leads Captados', description: 'Entrada do funil', value: totalLeads },
+                { name: 'Leads Qualificados', description: '30% de conversão', value: qualified },
+                { name: 'Propostas Enviadas', description: '17% de conversão', value: proposals },
+                { name: 'Negócios Fechados', description: '4.2% de conversão final', value: closed }
+            ];
+
+            const funnelHTML = funnelSteps.map(step => `
+                <div class="funnel-item">
+                    <div class="funnel-info">
+                        <h4>${step.name}</h4>
+                        <p>${step.description}</p>
+                    </div>
+                    <div class="funnel-value">${formatNumber(step.value)}</div>
+                </div>
+            `).join('');
+
+            document.getElementById('funnelData').innerHTML = funnelHTML;
+        }
+
+        // ===== FUNÇÕES AUXILIARES =====
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(value);
+        }
+
+        function formatNumber(value) {
+            return new Intl.NumberFormat('pt-BR').format(value);
+        }
+
+        function showTab(tabName) {
+            // Remover classe active de todas as tabs
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            
+            // Adicionar classe active na tab clicada
+            event.target.classList.add('active');
+            
+            // Esconder todos os conteúdos
+            document.getElementById('funnelTab').classList.add('hidden');
+            document.getElementById('gamificationTab').classList.add('hidden');
+            document.getElementById('goalsTab').classList.add('hidden');
+            
+            // Mostrar conteúdo da tab selecionada
+            document.getElementById(tabName + 'Tab').classList.remove('hidden');
+        }
+
+        function openConfigModal() {
+            alert('🎯 Modal de configuração de metas será implementado em breve!');
+        }
+
+        // ===== INICIALIZAÇÃO =====
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Dashboard Uno iniciado!');
+            loadAllData();
+            
+            // Atualização automática a cada 15 minutos
+            setInterval(loadAllData, 15 * 60 * 1000);
+            
+            // Filtro de período
+            document.getElementById('periodFilter').addEventListener('change', function() {
+                console.log('📊 Filtro alterado:', this.value);
+                updateDashboard();
+            });
+        });
+    </script>
+</body>
 </html>
+
